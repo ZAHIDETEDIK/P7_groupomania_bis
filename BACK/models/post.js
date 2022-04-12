@@ -2,7 +2,7 @@ const mysql = require ('mysql');
 
 // Constructeur
 const Post = function(post) {
-    this.title = post.title,
+    
     this.content = post.content,
     this.image = post.image,
     this.user_id = post.user_id
@@ -13,7 +13,7 @@ const Post = function(post) {
 Post.create = (newPost, result) => {
     db.query(
         "INSERT INTO groupomania.post SET ?",
-        newArticle,
+        newPost,
         (err, res) => {
             if (err) {
                 console.log("error: " + err);
@@ -27,10 +27,10 @@ Post.create = (newPost, result) => {
 };
 
 // Effacer un article par son Id 
-Article.deleteOne = (postId) => {
+Post.deleteOne = (postId) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `DELETE FROM groupomania.post WHERE id=${articleId}`,
+            `DELETE FROM groupomania.post WHERE id=${postId}`,
             function (error, result) {
                 if (error) {
                     reject (error);
@@ -43,17 +43,17 @@ Article.deleteOne = (postId) => {
 };
 
 // Modification d'un article OK
-Article.updateOne = (articleId, article) => {
+Post.updateOne = (postId, post) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `UPDATE groupomania.post SET title="${article.title}", body="${article.body}", image="${article.image}" WHERE id="${articleId}"`,
+            `UPDATE groupomania.post SET  content="${post.body}", image="${post.image}" WHERE id="${postId}"`,
             function (error, result) {
                 if (error) {
                     reject (error);
                     console.log("error :" + error);
                 } else {
                     resolve (result);
-                    console.log("post " + {id: articleId, ...article} + "modifié avec succès");
+                    console.log("post " + {id: postId, ...post} + "modifié avec succès");
                 }
             }
         )
@@ -61,7 +61,7 @@ Article.updateOne = (articleId, article) => {
 };
 
 // Chercher tous les articles OK
-Article.findAll = (result) => {
+Post.getAllPosts = (result) => {
     db.query(
         "SELECT * FROM groupomania.post", (err, res) => {
             if (err) {
@@ -74,15 +74,5 @@ Article.findAll = (result) => {
     )
 };
 
-// Chercher tous les articles par date de creation OK
-Article.findAllByCreatedAt = (result) => {
-    db.query(
-        "SELECT * FROM groupomania.post ORDER BY createdAt DESC", (err, res) => {
-            if (err) {
-                result(err, null);
-                return;
-            } else {
-                result(null, {articles: res});
-            }
-        })
-    }
+
+    

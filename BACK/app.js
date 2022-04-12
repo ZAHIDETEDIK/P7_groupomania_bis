@@ -5,15 +5,14 @@ const helmet = require('helmet');
 const cors=require('cors');
 
 
-//const userRoutes = require('./routes/user');
-//const articleRoutes = require('./routes/article');
-//const commentRoutes = require('./routes/comment');
-//const likeRoutes = require('./routes/likes');
 
+const userRoutes = require('./routes/user');
+const postRoutes = require('./routes/post');
+const commentRoutes = require('./routes/comment');
 
 const app = express();
+const mysql = require('mysql');
 require('dotenv').config();
-const mysql = require("mysql");
 const { connect } = require('http2');
 const db = mysql.createConnection({ 
       host: process.env.DB_HOST,
@@ -43,12 +42,10 @@ app.use((req, res, next) => {
     );
     next();
 });
-//app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(bodyParser.json());
 
-//app.use('/api/auth', userRoutes);
-//app.use('/api/auth', articleRoutes);
-//app.use('/api/auth', commentRoutes);
-//app.use('/api/auth', likeRoutes);
-
+app.use('/api/auth', userRoutes);
+app.use('/api/auth', postRoutes);
+app.use('/api/auth', commentRoutes);
 module.exports = app;
