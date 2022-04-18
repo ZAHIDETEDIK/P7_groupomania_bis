@@ -11,14 +11,29 @@ const userCtrl = require('../controllers/user');
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
 
+// Création d'un utilisateur OK
+    router.post('/register/', userCtrl.register);
 
-// Routes de l'API pour les utilisateurs
-router.post('/signup', userCtrl.signup);
-router.post('/login', userCtrl.login);
-//router.get('/:id', auth, userCtrl.getUserProfile);
-router.put('/:id', auth, multer, userCtrl.modifyUserProfile);
-router.delete('/:id', auth, userCtrl.deleteAccount);
+// Connection d'un utilisateur enregistré OK
+    router.post('/login/', userCtrl.login);
 
+// Connection de l'utilisateur en cours de login pour vérifier la validité du token et récupérer ses données
+    router.get('/me', auth, userCtrl.getMyDatas);
 
-// Permet d'exporter le router
+// Déconnection de l'utilisateur
+    router.post('/logout', auth, userCtrl.logout)
+
+// Trouver Un utilisateur par son id OK
+    router.get('/user/:id', auth, userCtrl.getOneUserById);
+
+// Retrouver tous les utilisateurs (Admin) OK
+    router.get('/users/', auth, userCtrl.getAllUsers);
+
+// Modifier les données utilisateur
+    router.put('/user/update/:userId', auth, userCtrl.updateUser);
+
+// Effacer un utilisateur (Admin) OK
+    router.delete('/user/delete/:userId', auth, userCtrl.deleteUser);
+   
+
 module.exports = router;

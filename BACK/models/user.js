@@ -1,3 +1,4 @@
+
 const mysql = require ('mysql');
 
 // Constructeur
@@ -5,14 +6,15 @@ const User = function(user) {
     this.pseudo = user.pseudo,
     this.email = user.email,
     this.imageProfile= user.imageProfile,
-    this.password = user.password,  
+    this.password = user.password, 
+    this.username = user.username, 
     this.isAdmin= 0
 };
 
 //Création d'un utilisateur OK
-User.create = (newUser, result) => {
+User.create = function(newUser, result)  {
     db.query(
-        "INSERT INTO groupomania.users SET ?",
+        "INSERT INTO groupomania.user SET ?",
         newUser,
         (err, res) => {
             if (err) {
@@ -30,7 +32,7 @@ User.create = (newUser, result) => {
 User.deleteOne = (userId) => {
     return new Promise((resolve, reject) => {
         db.query(
-            `DELETE FROM groupomania.users WHERE id=${userId}`,
+            `DELETE FROM groupomania.user WHERE id=${userId}`,
              function (error, result) {
                 if (error) {
                     reject(error);
@@ -48,7 +50,7 @@ User.deleteOne = (userId) => {
 User.findById = (userId) => {
     return new Promise((resolve, reject)=> {
         db.query(
-            `SELECT * FROM groupomania.users WHERE id=${userId}`,
+            `SELECT * FROM groupomania.user WHERE id=${userId}`,
             function (error, result, fields) {
                 if (error) {
                     reject (error);
@@ -63,7 +65,7 @@ User.findById = (userId) => {
 //Trouver un utilisateur (login) OK
 User.findOne = (email, result) => {
     db.query(
-        "SELECT * FROM groupomania.users WHERE email=?",
+        "SELECT * FROM groupomania.user WHERE email=?",
         email, (err, res) => {
             if (err) {
                 result(err, null);
@@ -75,7 +77,7 @@ User.findOne = (email, result) => {
 
 //Trouver tous les utilisateurs (admin) OK
 User.findAll = (result) => {
-    db.query('SELECT * FROM groupomania.users', (err, res) => {
+    db.query('SELECT * FROM groupomania.user', (err, res) => {
         if (err) {
             result(err, null);
             return;

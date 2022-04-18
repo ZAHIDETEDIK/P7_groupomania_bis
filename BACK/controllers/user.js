@@ -1,107 +1,107 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
+require ('dotenv').config
+
 // Importer l'utilisateur
-const User = require('../models/User');
+const User = require('../models/user');
 
 // Inscription de l'utilisateur
-exports.signup = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10)
-      .then(hash => {
-        const user = new User({
-          username: req.body.username,
-          email: req.body.email,
-          password: hash,
-          isAdmin: 0
-        });
-        user.save()
-          .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
-          .catch(error => res.status(400).json({ error }));
-      })
-      .catch(error => res.status(500).json({ error }));
-    }
+exports.register  = async  (req, res, next) => { 
+       
+};
     // Permet à un utilisateur de se connecter
-exports.login = (req, res, next) => {
-    User.findOne({
-        where: { email: req.body.email }
-    })
-    .then(user => {
-        if(user) {
-            bcrypt.compare(req.body.password, user.password)
-            .then(valid => {
-                if(!valid) {
-                    return res.status(401).json({ error: 'Mot de passe incorrect' });
+    exports.login = (req, res) => {
+        User.findOne(req.body.email, (err, data) => {
+            //console.log(data);
+            if(!data){
+                console.log('user pas trouvé')
+                return res.status(401).json({error: 'utilisateur non trouvé'});
+            }
+            bcrypt.compare(req.body.password, data.password)
+            .then(isValid => {
+                if(!isValid){
+                    return res.status(401).json({error: 'mot de passe incorrect'});
+                };
+                const payload = {
+                
+                    id: data.id,
+                    isAdmin: data.isAdmin,
+                    username: data.username,
+                    imageProfile: data.imageProfile,
+                    pseudo: data.pseudo,
                 }
                 res.status(200).json({
-                    userId: user.id,
-                    isAdmin: user.isAdmin,
-                    username: user.username,
-                    imageProfile: user.imageProfile,
-                    token: jwt.sign(
-                        {userId: user.id},
-                        process.env.JWT_SECRET_TOKEN,
-                        {expiresIn: '24h'}
+                    ...payload,
+                        
+                        token: jwt.sign(
+                             payload,
+                        
+                        
                     )
-                });
+                })
             })
-            .catch(error => res.status(500).json({ error: '⚠ Oops, une erreur s\'est produite !' }));
-        } else {
-            return res.status(404).json({ error: 'Cet utilisateur n\'existe pas, veuillez créer un compte' })
-        }
-    })
-    .catch(error => res.status(500).json({ error: ' une erreur s\'est produite !' }));
-}
-// Permet à un utilisateur de modifier son profil
-exports.modifyUserProfile = (req, res, next) => {
-    const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_TOKEN);
-    const userId = decodedToken.userId;
+            .catch(error => res.status(500).json({ error: '⚠ Oops, une erreur s\'est produite !' }));    
+    });
+};
+// Vérification de token au login
+exports.getMyDatas = (req, res) => {
+    let token = req.headers.authorization.split(' ')[1];
+    let decodedToken = jwt.verify(token, 'RAMDOM_TOKEN_SECRET');
+    let id = JSON.parse(decodedToken.id);
+    User.findById(id)
+    .then(user => res.status(200).json(user))
+    .catch(error => res.status(404).json({ error }));
 
-    req.body.user = userId
-    console.log('bodyUser', req.body.user);
-    const userObject = req.file ?
-    {
-    ...JSON.parse(req.body.user),
-    imageProfile: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body };
+}
+
+// Déconnection de l'utilisateur
+exports.logout = (req, res) => {
+    console.log(req.body);
+    res.status(200).json({
+        message: 'ok'
+    });
+}
+
+// Modifications des données utilisateur
+exports.updateUser = (req, res) => {
+    let user = (req.body);
+    let userId = req.params.userId;
+    console.log(userId + " " + user);
+    User.updateOne(userId, user)
+    .then(() => res.status(200).json({ message: 'Utilisateur modifié !'}))
+    .catch(error => res.status(404).json({ error }));
+}
+
+// Trouver Un utilisateur par son id OK
+exports.getOneUserById = (req, res) => {
+    User.findById(req.params.id)
+    .then(user => res.status(200).json(user))
+    .catch(error => res.status(404).json({ error }));
+};
+
+// Trouver tous les utilisateurs (rôle admin) OK
+exports.getAllUsers = (req, res) => {
+    User.findAll((err, data) => {
+        if(err) {
+            res.status(500).send({
+                message: err.message || "des erreurs se sont produites",
+            });
+            console.log("Pas d'utilisateur !")
+        }
+        console.log('On a tout le monde');
+        res.send(data);
+    });
+};
+
+
+// Suppression d'un utilisateur (rôle admin) OK
+exports.deleteUser = (req, res) => {
     
-     User.findOne({
-        where: { id: userId },
-    })
-    .then(userFound => {
-        if(userFound) {
-             User.update(userObject, {
-                where: { id: userId}
-            })
-            .then(user => res.status(200).json({ message: 'Votre profil a bien été modifié !' }))
-            .catch(error => res.status(400).json({ error: '⚠ Oops, une erreur s\'est produite !' }))
-        }
-        else {
-            res.status(404).json({ error: 'Utilisateur non trouvé' });
-        }
-    })
-    .catch(error => res.status(500).json({ error: ', une erreur s\'est produite !' }));
-}
+    //console.log(userId);
+    User.deleteOne(req.params.userId)
+        .then(() => res.status(200).json({ message: 'Utilisateur supprimé !'}))
+        .catch(error => res.status(404).json ({ error }));
 
-
-// Permet à un utilisateur de supprimer son compte
-exports.deleteAccount = (req, res, next) => {
-    const id = req.params.id;
-          User.findOne({
-        attributes: ['id'],
-        where: { id: id }
-    })
-    .then(user => {
-        if(user) {
-            User.destroy({ 
-                where: { id: id } 
-            })
-            .then(() => res.status(200).json({ message: 'Votre compte a été supprimé' }))
-            .catch(() => res.status(500).json({ error:  ', une erreur s\'est produite !' }));
-            
-        } else {
-            return res.status(404).json({ error: 'Utilisateur non trouvé' })
-        }
-    })
-    .catch(error => res.status(500).json({ error: ', une erreur s\'est produite !' }));
 }
+    

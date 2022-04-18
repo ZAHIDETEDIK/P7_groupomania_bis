@@ -7,12 +7,13 @@ const cors=require('cors');
 
 
 const userRoutes = require('./routes/user');
-const postRoutes = require('./routes/post');
+const articleRoutes = require('./routes/article');
 const commentRoutes = require('./routes/comment');
+const likeRoutes = require('./routes/likes');
 
 const app = express();
-const mysql = require('mysql');
 require('dotenv').config();
+const mysql = require('mysql');
 const { connect } = require('http2');
 const db = mysql.createConnection({ 
       host: process.env.DB_HOST,
@@ -45,7 +46,9 @@ app.use((req, res, next) => {
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(bodyParser.json());
 
-app.use('/api/auth', userRoutes);
-app.use('/api/auth', postRoutes);
-app.use('/api/auth', commentRoutes);
+app.use('/user', userRoutes);
+app.use('/article', articleRoutes);
+app.use('/comment', commentRoutes);
+app.use('/like', likeRoutes);
+
 module.exports = app;

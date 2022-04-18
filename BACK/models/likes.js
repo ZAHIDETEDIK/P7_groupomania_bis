@@ -5,7 +5,7 @@ const LikeDislike = function(likeDislike) {
     this.likes = likeDislike.likes,
     this.dislikes = likeDislike.dislikes,
     this.users_id = likeDislike.userId,
-    this.post_id = likeDislike.postId
+    this.article_id = likeDislike.articleId
 };
 
 // Like un article

@@ -9,7 +9,7 @@ exports.addLikeDislike = (req,res) => {
         dislikes: req.body.dislikes
     });
     // Récupérer les avis d'un article
-    LikeDislike.findByPostId(req.body.postId)
+    LikeDislike.findByPostId(req.body.articleId)
     .then(like => {
         let userId = req.body.userId;
         let userWantsToLike = (req.body.likes === 1);
