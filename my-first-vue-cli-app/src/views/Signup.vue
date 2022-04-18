@@ -58,21 +58,34 @@
         },
         methods: {
             // Permet de s'inscrire et de basculer sur la page de connexion 
-            async signup() {
-                await axios.post('http://localhost:3000/api/user/register', {
+             signup() { 
+                 let user={
                     pseudo: this.pseudo,
                     email: this.email,
                     password: this.password,
-                })
-                .then(() => {
+                };
+
+                 const options = {
+        method: 'POST',
+        body: JSON.stringify(user),
+        headers: {
+            'Accept': 'application/json',
+            "Content-Type": "application/json"
+        }
+    };
+    fetch("http://localhost:3000/api/user/register", options)
+        .then(response => response.json())
+         .then(() => {
                     this.notyf.success('Votre compte a bien été créé ! A présent, veuillez vous connecter.')
                     this.$router.push('/');
                 })
                 .catch(error => {
                     const msgerror = error.response
                     this.notyf.error(msgerror.error)
+              
                 })
-            },
+
+            }
         }
     }
 </script>
