@@ -13,8 +13,8 @@ const commentCtrl = require('../controllers/comment');
 
 
 // Routes de l'API pour les messages
-router.post('/:postId', auth, commentCtrl.createComment);
-router.get('/:postId', auth, commentCtrl.getAllComments);
+router.post('/:articleId',  commentCtrl.createComment);
+router.get('/:artticleId', commentCtrl.getAllComments);
 router.delete('/:commentId', auth, commentCtrl.deleteComment);
 
 

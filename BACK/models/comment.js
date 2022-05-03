@@ -2,18 +2,26 @@ const mysql = require('mysql');
 
 // Constructeur
 const Comment = function(comment) {
-    this.CONTENT = comment.CONTENT,
-    this.users_id = comment.users_id,
-    this.post_id = comment.post_id
+    this.content = comment.content,
+    this.userId = comment.userId,
+    this.articleId = comment.articleId
 };
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME
+});
 
 
 // Création d'un commentaire 
 Comment.create = (newComment, result) => {
-    db.query(
-        "INSERT INTO groupomania.comments SET ?",
-        newComment,
-        (err, res) => {
+    
+  let sql= `INSERT INTO groupomania.comment(content,userId,articleId)Values('${newComment.content}','${newComment.userId}','${newComment.article.id}');`;
+  var query= db.query (
+    sql
+    ,function   (err, res) {
+            console.log(query);
             if (err) {
                 console.log("error: " +err);
                 result(err, null);
@@ -28,9 +36,12 @@ Comment.create = (newComment, result) => {
 // Chercher tous les commentaires d'un article 
 Comment.findAll = (articleId) => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `SELECT * FROM groupomania.comments WHERE articles_id=${postId}`, 
+        
+          let sql = `SELECT * FROM groupomania.comments WHERE articles =${articleId}`
+          var query= db.query (
+            sql,
             function (error, result) {
+                console.log(query);
                 if (error) { 
                     reject (error);
                 } else {
@@ -44,9 +55,12 @@ Comment.findAll = (articleId) => {
 // Modifier un commentaire OK
 Comment.updateOne = (commentId, body) => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `UPDATE groupomania.comments SET body=${body} WHERE id=${commentId}`, 
+        
+            let sql=`UPDATE groupomania.comments SET content=${content} WHERE id=${commentId}` 
+            var query= db.query (
+                sql,
             function (error, result) {
+                console.log(query);
                 if (error) { 
                     reject (error);
                 } else {
@@ -61,10 +75,13 @@ Comment.updateOne = (commentId, body) => {
 // Effacer un commentaire avec son id 
 Comment.deleteOneComment = (commentId) => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `DELETE FROM groupomania.comments WHERE id=${commentId}`,
+        
+           let sql = `DELETE FROM groupomania.comments WHERE id=${commentId}`
+           var query= db.query (
+            sql,
              function (error, result) {
                 if (error) {
+                    console.log(query);
                     reject(error);
                     console.log(error + ' pas effacé');
                 } else {
@@ -79,10 +96,13 @@ Comment.deleteOneComment = (commentId) => {
 // Trouver un article par son Id 
 Comment.findById = (commentId) => {
     return new Promise((resolve, reject) => {
-        db.query(
-            `SELECT * FROM groupomania.comments WHERE id=${commentId}`, 
+       
+         let sql =  `SELECT * FROM groupomania.comments WHERE id=${commentId}`
+         var query= db.query (
+            sql,
             function (error, result) {
                 if (error) { 
+                    console.log(query);
                     reject (error);
                 } else {
                     resolve (result);

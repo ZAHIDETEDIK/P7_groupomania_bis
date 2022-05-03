@@ -17,6 +17,7 @@ const multer = require('../middleware/multer-config');
 // Connection d'un utilisateur enregistré OK
     router.post('/login/', userCtrl.login);
 
+
 // Connection de l'utilisateur en cours de login pour vérifier la validité du token et récupérer ses données
     router.get('/me', auth, userCtrl.getMyDatas);
 
@@ -25,15 +26,16 @@ const multer = require('../middleware/multer-config');
 
 // Trouver Un utilisateur par son id OK
     router.get('/user/:id', auth, userCtrl.getOneUserById);
-
+    
+    router.get('/:id',  userCtrl.getUserProfile);
 // Retrouver tous les utilisateurs (Admin) OK
-    router.get('/users/', auth, userCtrl.getAllUsers);
+    router.get('/users/',  userCtrl.getAllUsers);
 
 // Modifier les données utilisateur
-    router.put('/user/update/:userId', auth, userCtrl.updateUser);
+    router.put('/user/update/:userId', userCtrl.updateUser);
 
 // Effacer un utilisateur (Admin) OK
-    router.delete('/user/delete/:userId', auth, userCtrl.deleteUser);
+    router.delete('/user/delete/:userId',  userCtrl.deleteUser);
    
 
 module.exports = router;

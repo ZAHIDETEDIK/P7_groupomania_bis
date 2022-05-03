@@ -1,7 +1,7 @@
 <template>  
     <div id="app">
         <nav class="navbar navbar-expand-lg navbar-light nav">
-            <img class="nav__logo" src="../assets/logo.png" alt="Logo de Groupomania">
+            <img class="nav__logo" src="../assets/icon-left-font.png" alt="Logo de Groupomania">
 
             <button class="navbar-toggler justify-content-center nav__menuButton" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fa fa-bars"></i>
@@ -17,10 +17,10 @@
                         <router-link to="/profile" class="nav__links__link">Mon profil</router-link>
                     </li>
 
-                <!--    <li class="nav-item">
+                  <li class="nav-item">
                         <ModaleLogout v-bind:revele="revele" v-bind:displayModale='displayModale'/>
                         <button @click="displayModale" class="nav__links__logoutLink">Déconnexion <i class="fas fa-sign-out-alt"></i></button>    
-                    </li>-->
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -30,24 +30,24 @@
 </template>
 
 <script>
-    //import ModaleLogout from '@/components/ModaleLogout.vue'
-   // export default {
-       // name: 'Navbar',
-       // data(){
-           // return {
-               // revele: false
-            //}
-       // },
-       // components: {
-          //  ModaleLogout
-        //},
-        //methods: {
+    import ModaleLogout from '@/components/ModaleLogout.vue'
+    export default {
+        name: 'Navbar',
+        data(){
+           return {
+                revele: false
+            }
+        },
+        components: {
+            ModaleLogout
+        },
+        methods: {
             // Permet d'afficher la boîte modale de déconnexion 
-           // displayModale() {
-              //  this.revele = !this.revele
-           // }
-       // }
-    //}
+            displayModale() { 
+              this.revele = !this.revele
+            }
+        }
+    }
 </script>
 
 <style scoped lang="scss">

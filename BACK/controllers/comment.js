@@ -13,8 +13,8 @@ exports.createComment = (req, res) => {
     // Création d'un commentaire
     const comment = new Comment({
         body: req.body.body,
-        users_id: req.body.users_id,
-        articles_id: req.body.articles_id
+        userId: req.body.userId,
+        articleId: req.body.articleId
     });
     // Sauvegarde dans la DB
     Comment.create(comment, (err, data) => {
@@ -30,22 +30,22 @@ exports.createComment = (req, res) => {
 
 // Récupérer les commentaires par l'id de l'article concerné 
 exports.getAllComments = (req, res) => {
-    Comment.findAll(req.params.postId)
+    Comment.findAll(req.params.articleId)
     .then(comments => res.status(200).json(comments))
     .catch(error => res.status(404).json({ error }));
 };
 
 // Modifier un commentaire 
-exports.updateComment = (req, res) => {
-    let commentId = req.params.commentId;
-    let body = JSON.stringify(req.body.body);
-    console.log(commentId + body);
-    Comment.updateOne(commentId, body)
-    .then(() => res.status(200).json({ message: 'Commentaire modifié !'}))
-    .catch(error => res.status(404).json({ error }));
-};
+//exports.updateComment = (req, res) => {
+    //let commentId = req.params.commentId;
+    //let body = JSON.stringify(req.body.body);
+    //console.log(commentId + body);
+    //Comment.updateOne(commentId, body)
+    //.then(() => res.status(200).json({ message: 'Commentaire modifié !'}))
+    //.catch(error => res.status(404).json({ error }));
+//};
 
-// Supprimer un commentaire OK
+// Supprimer un commentaire 
 exports.deleteComment = (req, res) => {
     Comment.deleteComment(req.params.commentId)
     .then(() => res.status(200).json({ message: 'Commentaire effacé !'}))
@@ -53,8 +53,8 @@ exports.deleteComment = (req, res) => {
 }
 
 // Trouver un commentaire par son ID (modification de commentaire) 
-exports.findCommentById = (req, res, next) => {
-    Comment.findById(req.params.commentId)
-    .then(comment => res.status(200).json(comment))
-    .catch(error => res.status(404).json({ error }));
-}
+//exports.findCommentById = (req, res, next) => {
+    //Comment.findById(req.params.commentId)
+    //.then(comment => res.status(200).json(comment))
+    //.catch(error => res.status(404).json({ error }));
+//}

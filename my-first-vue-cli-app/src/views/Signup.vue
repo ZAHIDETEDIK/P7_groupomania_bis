@@ -11,8 +11,8 @@
                 <h1 class="home__display__form__title">S'inscrire</h1>
 
                 <div class="home__display__form__input">
-                    <label for="username" class="home__display__form__input__label">Pseudo</label>
-                    <input type="text" v-model="username" id="username" name="username">
+                    <label for="pseudo" class="home__display__form__input__label">Pseudo</label>
+                    <input type="text" v-model="pseudo" id="pseudo" name="pseudo">
                 </div>
 
                 <div class="home__display__form__input">
@@ -35,14 +35,14 @@
 
 
 <script>
-    import axios from 'axios';
+   // import axios from 'axios';
     import { Notyf } from 'notyf';
     import 'notyf/notyf.min.css';
     export default {
         name: 'Signup',
         data() {
             return {
-                username: '',
+                pseudo: '',
                 email: '',
                 password: '',
             };
@@ -59,7 +59,7 @@
         methods: {
             // Permet de s'inscrire et de basculer sur la page de connexion 
              signup() { 
-                 let user={
+                 const user={
                     pseudo: this.pseudo,
                     email: this.email,
                     password: this.password,
@@ -81,7 +81,7 @@
                 })
                 .catch(error => {
                     const msgerror = error.response
-                    this.notyf.error(msgerror.error)
+                    this.notyf.error(msgerror)
               
                 })
 
