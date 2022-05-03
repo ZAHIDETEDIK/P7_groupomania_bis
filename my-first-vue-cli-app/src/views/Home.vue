@@ -82,7 +82,7 @@ export default {
           localStorage.setItem("token", data.token);
           localStorage.setItem("userId", data.userId);
           this.notyf.success("vous êtes connecté");
-          this.$router.push("/POST");
+          this.$router.push("/Post");
         })
         .catch((error) => {
           const msgerror = error.response;

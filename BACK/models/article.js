@@ -83,15 +83,15 @@ Article.updateOne = (articleId, article) => {
 // Chercher tous les articles OK
 Article.findAll = (result) => {
     
-    let sql=`SELECT userId,content,image,(SELECT pseudo FROM groupomania.user where id= article.userId ) as pseudo FROM groupomania.article as article`
+    let sql=`SELECT * FROM groupomania.article as article INNER JOIN user as user ON user.id = article.userId`
         var query= db.query (
             sql,
-            function(err,result){ 
+            function(err,res){ 
                 console.log(query);
             if (err) {
                 return;
             } else {
-                result(null, {article: res});
+                result(null, {articles: res});
             }
         }
     )

@@ -96,7 +96,7 @@ User.findOne = (email,result) =>{
         }
         else{ 
         console.log('gagné');
-       // result(null,res[0]);
+        result(null,res[0]);
     };
 })
 }

@@ -14,7 +14,7 @@ router.delete('/article/delete/:articleId', auth, articleCtrl.deleteArticle);
 router.put('/article/update/:articleId', auth, articleCtrl.modifyArticle);
 
 // Récupérer TOUS les articles OK
-router.get('/article/', articleCtrl.getArticle);
+router.get('/', articleCtrl.getArticle);
 
 // Récupérer tous les articles par date de création
 //router.get('/article/createdAt/', auth, articleCtrl.getArticleByCreatedDate);

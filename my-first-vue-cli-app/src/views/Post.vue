@@ -63,16 +63,12 @@
       </form>
     </div>
 
-    <div class="displayPost" v-for="article in articles" :key="article.articleId">
+    <div class="displayPost" v-for="article in articles" :key="article.id">
       <div class="displayPost__item">
         <div class="displayPost__item__information">
           <div class="displayPost__item__information__user">
-            <ProfileImage
-              :src="article.user.imageProfile"
-              class="displayPost__item__information__user__photo"
-            />
             <h2 class="displayPost__item__information__user__name">
-              {{ article.user.pseudo }}
+              {{ article.pseudo }}
             </h2>
           </div>
 
@@ -169,11 +165,12 @@
               class="displayPost__item__option__button far fa-comment-dots"
               aria-label="Commenter le message"
             ></i>
-            <span
+            <!-- <span
               v-if="article.comment.length > 0"
               class="displayPost__item__option__count"
               >{{ article.comment.length }}</span
             >
+            -->
           </div>
 
           <i
@@ -359,16 +356,13 @@ export default {
         image: this.image,
         userId: this.userId,
       };
-      const options = {
-        method: "GET",
-        body: JSON.stringify(article),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      };
-      fetch("http://localhost:3000/api/article/getArticle", options)
+      console.log("displayPost");
+
+      fetch("http://localhost:3000/api/article")
         .then((response) => response.json())
+        .then((data) => {
+          this.articles = data.articles;
+        })
         .catch((error) => {
           const msgerror = error;
           this.notyf.error(msgerror);

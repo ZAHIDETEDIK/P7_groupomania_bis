@@ -48,6 +48,13 @@ exports.register = (req, res) => {
                 console.log(isValid)
                 if(!isValid){
                     return res.status(401).json({error: 'mot de passe incorrect'});
+                
+                } else{ 
+                    res.status(200).json({
+                        userId: data.id,
+                        token: jwt.sign({ userId: 'userId' }, 
+                        'RANDOM_TOKEN_SECRET', { expiresIn: 60 * 60 })
+                    });     
             
                 }})
         
