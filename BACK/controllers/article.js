@@ -11,7 +11,7 @@ exports.createArticle = (req, res, next) => {
         Article.create({
         
             content: req.body.content,
-            image: req.body.image,
+            image:req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}`: req.body.image,
             userId: req.body.userId,
         },(err, data) => {
             if (err) {
@@ -29,19 +29,32 @@ exports.createArticle = (req, res, next) => {
 };
 // suppprimer un article OK
 exports.deleteArticle = (req, res, next) => {
-    Article.deleteArticle(req.params.articleId)
-    .then(article => res.status(200).json(article))
-    .catch(error => res.status(404).json ({ error }));
-};
+    Article.findOne(req.params.articleId)
+    .then((article) => {
+     Article.deleteOne(req.params.articleId) 
+     .then(() => res.status(200).json({ message: 'Message supprimé' }))
+                .catch(error => res.status(400).json({ error }));
+         
+     })  
+    
+    .catch(error => res.status(500).json({ error }));
+}
 
 // modifier un Article OK !! format de date !!
 exports.modifyArticle = (req, res, next) => {
     let article = req.body;
     let articleId = req.params.articleId;
-    Article.updatedOne(articleId,article) 
-    .then(() => res.status(200).json({ message: 'Article modifié !'}))
-    .catch(error => res.status(404).json({ error }));
-};
+    console.log(articleId + " " + article);
+    Article.updatedOne((err,data)=>{ 
+        if(err){
+            res.status(500).send({
+                message: err.message || "des erreurs se sont produites",
+            });
+        }
+        res.send(data);
+      });
+    }
+
 
 // récupérer TOUS les articles de TOUS les utilisateurs OK
 exports.getArticle = (req, res, next) => {
@@ -57,10 +70,10 @@ exports.getArticle = (req, res, next) => {
 
 // récupérer TOUS les articles triés par date de création OK
 //exports.getArticleByCreatedDate = (req, res, next) => { 
-   // Article.findAllByCreatedAt((err, data) => {
-        //if(err){
-           // res.status(500).send({
-                //message: err.message || "des erreurs se sont produites",
+  //  Article.findAllByCreatedAt((err, data) => {
+       // if(err){
+          // res.status(500).send({
+               // message: err.message || "des erreurs se sont produites",
             //});
         //}
         //res.send(data);

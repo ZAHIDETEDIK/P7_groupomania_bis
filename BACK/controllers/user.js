@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const console = require('console');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
 require ('dotenv').config
@@ -54,7 +55,9 @@ exports.register = (req, res) => {
                         userId: data.id,
                         token: jwt.sign({ userId: 'userId' }, 
                         'RANDOM_TOKEN_SECRET', { expiresIn: 60 * 60 })
-                    });     
+                    });
+            
+     
             
                 }})
         
@@ -73,19 +76,22 @@ User.findById(id)
     .catch(error => res.status(404).json({ error }));
 
 }
-exports.getUserProfile = (req, res, next) => {
-    const id = req.params.id;
-    User.findOne(id)
+exports.getOneUserById = (req, res) => {
     
-    .then(user => {
+    User.findById(req.params.id, (err, user) => {
+console.log("hello");
         if(user) {
-            res.status(200).json(user);
-        } else {
-            res.status(404).json({ error: 'Utilisateur non trouvé' })
-        }
-    })
-    .catch(error => res.status(404).json({ error: '⚠ Oops, une erreur s\'est produite !' }));
+
+             res.status(200).json(user);
+         } else {
+             res.status(404).json({ error: 'Utilisateur non trouvé' })
+         
+    }
+}) 
 }
+
+
+ 
 
 // Déconnection de l'utilisateur
 exports.logout = (req, res) => {
@@ -96,7 +102,7 @@ exports.logout = (req, res) => {
 }
 
 // Modifications des données utilisateur
-exports.updateUser = (req, res) => {
+exports.updateUser =(req, res) => {
     let user = (req.body);
     let userId = req.params.userId;
     console.log(userId + " " + user);
@@ -105,12 +111,12 @@ exports.updateUser = (req, res) => {
     .catch(error => res.status(404).json({ error }));
 }
 
-// Trouver Un utilisateur par son id OK
-exports.getOneUserById = (req, res) => {
-    User.findById(req.params.id)
-    .then(user => res.status(200).json(user))
-    .catch(error => res.status(404).json({ error }));
-};
+// Trouver Un utilisateur par son id 
+//exports.getOneUserById = (req, res) => {
+    //User.findById(req.params.id)
+    //.then(user => res.status(200).json(user))
+    ////.catch(error => res.status(404).json({ error }));
+//};
 
 // Trouver tous les utilisateurs (rôle admin) OK
 exports.getAllUsers = (req, res) => {
@@ -129,11 +135,18 @@ exports.getAllUsers = (req, res) => {
 
 // Suppression d'un utilisateur (rôle admin) OK
 exports.deleteUser = (req, res) => {
-    let userId = req.params.userId;
-    console.log(userId);
-    User.deleteOne(req.params.userId)
-        .then(() => res.status(200).json({ message: 'Utilisateur supprimé !'}))
-        .catch(error => res.status(404).json ({ error }));
-
-}
    
+    
+    User.deleteOne(req.params.id,(err,user)=>{ 
+    console.log("c est moi")
+    if(user) {
+
+        res.status(200).json(user);
+    } else {
+        res.status(400).json({ error: 'Utilisateur supprimé' })
+    
+        
+    }
+})
+}
+

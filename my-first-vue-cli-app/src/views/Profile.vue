@@ -67,12 +67,13 @@ export default {
   },
   data() {
     return {
-      revele: false,
-      // userId: localStorage.getItem("userId"),
-      user: "",
-      // pseudo: "",
-      //email: "",
+      userId: localStorage.getItem("userId"),
+      user: null,
+
+      pseudo: "",
+      email: "",
       imageProfile: null,
+      revele: false,
     };
   },
   created() {
@@ -88,25 +89,12 @@ export default {
   methods: {
     // Permet d'afficher les informations de profil
     displayProfile() {
-      //const userId = localStorage.getItem('userId');
-      const user = {
-        pseudo: this.pseudo,
-        email: this.email,
-        imageProfile: this.imageProfile,
-      };
-      const options = {
-        method: "GET",
-        body: JSON.stringify(user),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      };
-
-      fetch("http://localhost:3000/api/user/getUserProfile", options)
+      //const userId = localStorage.getItem("userId");
+      fetch("http://localhost:3000/api/user/getUser/" + this.userId)
         .then((response) => response.json())
         .then((data) => {
-          this.user = response;
+          console.log(data);
+          this.user = data;
         })
         .catch((error) => {
           const msgerror = error;
@@ -125,25 +113,8 @@ export default {
       //const userId = localStorage.getItem("userId");
       const formData = new FormData();
       formData.append("image", this.imageProfile);
-      const user = {
-        pseudo: this.pseudo,
-        email: this.email,
-        imageProfile: this.imageProfile,
-      };
-      const options = {
-        method: "PUT",
-        body: JSON.stringify(user),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      };
-      fetch("http://localhost:3000/api/user/updateUser", formData, options)
-        //headers: {
-        //'Authorization': 'Bearer ' + localStorage.getItem('token'),
-        //'Content-Type': 'multipart/form-data'
-        //}
-        //})
+
+      fetch("http://localhost:3000/api/user/updateUser" + userId)
         .then((response) => response.json())
         .then((data) => {
           this.notyf.success("Votre profil a bien été modifié !");

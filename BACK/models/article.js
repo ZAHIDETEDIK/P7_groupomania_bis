@@ -20,7 +20,7 @@ const Article = function(article) {
 //Création d'un article 
  Article.create=(newArticle, result) =>  {
 console.log(newArticle);
-        let sql = `INSERT INTO groupomania.article (content,image,userId) Values('${newArticle.content}','${newArticle.image}',${newArticle.userId});`;
+        let sql = `INSERT INTO groupomania.article (content,image,userId,createdAt) Values('${newArticle.content}','${newArticle.image}',${newArticle.userId},${Date.now()});`;
         console.log(sql);
         var query= db.query (
             sql
@@ -42,9 +42,9 @@ console.log(newArticle);
 
 // Effacer un article par son Id 
 Article.deleteOne = (articleId) => {
-    return new Promise((resolve, reject) => {
+    
         
-        let sql=`DELETE FROM groupomania.article WHERE id=${articleId}`
+        let sql=`DELETE FROM groupomania.article WHERE id=${articleId};`
         var query= db.query (
             sql,
             function (error, result) {
@@ -56,8 +56,8 @@ Article.deleteOne = (articleId) => {
                 }
             }
         )
-    })
-};
+        }
+
 
 // Modification d'un article OK
 Article.updateOne = (articleId, article) => {
@@ -83,7 +83,7 @@ Article.updateOne = (articleId, article) => {
 // Chercher tous les articles OK
 Article.findAll = (result) => {
     
-    let sql=`SELECT * FROM groupomania.article as article INNER JOIN user as user ON user.id = article.userId`
+    let sql=`SELECT article.id,article.content,article.userId,article.image FROM groupomania.article as article INNER JOIN user as user ON user.id = article.userId`
         var query= db.query (
             sql,
             function(err,res){ 
@@ -98,19 +98,18 @@ Article.findAll = (result) => {
 };
 //Article.findAllByCreatedAt = (result) => {
     
-     //  let sql= "SELECT * FROM groupomania.article ORDER BY createdAt DESC="(result)
-       // var query= db.query (
+       //let sql= "SELECT * FROM groupomania.article ORDER BY createdAt DESC="(result)
+        //var query= db.query (
           //  sql,
-          //  function(err,result){  
-                //console.log(query);
-        //if (err) {
-               // return;
+           // function(err,result){  
+               // console.log(query);
+       // if (err) {
+                //return;
             //} else {
-              //  result(null, {article: res});
+                //result(null, {article: res});
            // }
         //}
-    //)
-//};
+   // )};
 
 // Chercher tous les articles par date de mise a jour 
 //Article.findAllByUpdatedAt = (result) => {

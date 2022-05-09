@@ -17,7 +17,7 @@ const User = function(user) {
     this.isAdmin= 0
 };
 
-//Création d'un utilisateur OK
+//Création d'un utilisateur 
 User.create = (newUser, result) => {
     let sql = `INSERT INTO groupomania.user (email,password, pseudo,isAdmin) Values('${newUser.email}','${newUser.password}','${newUser.pseudo}','${newUser.isAdmin}');`;
     console.log(sql);
@@ -42,47 +42,51 @@ User.create = (newUser, result) => {
 
 
 
-//Supprimer un utilisateur (user ou admin) OK
-User.deleteOne = function userDelet(userId)  {
-    return new Promise((resolve, reject) => {
+//Supprimer un utilisateur (user ou admin) 
+User.deleteOne =(userId,result) => {
+    let sql = `SELECT * FROM groupomania.user WHERE id=${userId};`
+    console.log(sql);
+    var query =  db.query( sql,
+      function
+      (err, res){ 
+          if (err) {
+              console.log(query);
+          
+              
+          }
+          else{ 
+          console.log('supprimé');
+          result(null,res[0]);
+      }; 
+      
+        });
+    }
+
         
-         let sql =  `DELETE FROM groupomania.user WHERE id='${userId}';`
-           var query=db.query(
-               sql, 
-             function (error, result) {
-                 console.log(query);
-                if (error) {
-                    reject(error);
-                    console.log(error + ' pas effacé');
-                } else {
-                resolve (result);
-                console.log("utilisateur supprimé !");
-                }
-            }
-        )
-    })
-};
-
-//Trouver un user par son id (rôle admmin) OK
-User.findById = function findUser(userId)  {
-    return new Promise((resolve, reject)=> {
          
-           let sql= `SELECT * FROM groupomania.user WHERE id='${userId}';`
-            var query=db.query(
-            function (error, result, fields) {
-                sql,
-                console.log(query);
-                if (error) {
-                    reject (error);
-                } else {
-                    resolve (result);
-                }
-            }
-        )
-    })
-};
 
-//Trouver un utilisateur (login) OK
+//Trouver un user par son id (rôle admmin) 
+User.findById =  (userId,result) => {
+    
+    let sql = `SELECT * FROM groupomania.user WHERE id=${userId};`
+    console.log(sql);
+    var query =  db.query( sql,
+      function
+      (err, res){ 
+          if (err) {
+              console.log(query);
+          
+              
+          }
+          else{ 
+          console.log('gagné');
+          result(null,res[0]);
+      }; 
+      
+        })
+    }
+
+//Trouver un utilisateur (login) 
 User.findOne = (email,result) =>{
   let sql = `SELECT * FROM groupomania.user WHERE email='${email}';`
   console.log(sql);
@@ -102,9 +106,9 @@ User.findOne = (email,result) =>{
 }
 
 
-//Trouver tous les utilisateurs (admin) OK
+//Trouver tous les utilisateurs (admin) 
 User.findAll = function getAllUsers (userId,user) {
-    let sql = `SELECT * FROM groupomania.user SET pseudo="${user.pseudo}", email="${user.email}", imageProfile="${user.imageProfile}", isAdmin="${user.isAdmin}" WHERE id=${userId};`
+    let sql = `SELECT * FROM groupomania.user pseudo="${user.pseudo}", email="${user.email}", imageProfile="${user.imageProfile}", isAdmin="${user.isAdmin}" WHERE id=${userId};`
         var query =  db.query (sql,
             function(err,res){ 
 
@@ -123,7 +127,7 @@ User.findAll = function getAllUsers (userId,user) {
 User.updateOne = (userId, user) => {
     return new Promise((resolve, reject) => {
         
-        let sql=`UPDATE groupomania.user SET pseudo="${user.pseudo}", email="${user.email}", imageProfile="${user.imageProfile}", isAdmin="${user.isAdmin}" WHERE id=${userId};`
+        let sql=`UPDATE groupomania.user pseudo="${user.pseudo}", email="${user.email}", imageProfile="${user.imageProfile}", isAdmin="${user.isAdmin}" WHERE id=${userId};`
         var query =  db.query (sql,  
         function
              (error, result) {

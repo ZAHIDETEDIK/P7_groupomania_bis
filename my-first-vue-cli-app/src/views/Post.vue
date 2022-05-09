@@ -21,12 +21,11 @@
             aria-label="Rédiger un nouveau message"
           />
 
-          <div id="preview" style="display: block">
+          <div id="preview">
             <img
               v-if="imagePreview"
               :src="imagePreview"
               id="preview"
-              style="display: block"
               class="newPost__content__image"
               alt="Prévisualisation de l'image ajoutée au message"
             />
@@ -80,17 +79,12 @@
         </div>
 
         <div class="displayPost__item__publication">
-          <p
-            :contentPostId="articleId"
-            style="display: block"
-            class="displayPost__item__publication__text"
-          >
+          <p :contentPostId="articleId" class="displayPost__item__publication__text">
             {{ article.content }}
           </p>
 
           <div
             :inputId="articleId"
-            style="display: none"
             v-bind:showInputModify="showInputModify"
             class="displayPost__item__publication__text__modifyText"
           >
@@ -106,7 +100,7 @@
               <div class="displayPost__item__publication__text__modifyText__option__file">
                 <button
                   @click="uploadFile"
-                  type="button"
+                  type="submit"
                   class="displayPost__item__publication__text__modifyText__option__file__btnInvisible"
                 >
                   <i class="far fa-images fa-2x"></i> Choisir un fichier
@@ -148,7 +142,6 @@
           <img
             v-if="article.image"
             :imgPostId="articleId"
-            style="display: block"
             :src="article.image"
             class="displayPost__item__publication__image"
             alt="Image insérée dans le message"
@@ -159,12 +152,15 @@
           <Likes v-bind:post="article" />
 
           <div>
-            <i
-              @click="displayComment(articleId)"
+            <i @click="displayComment(articleId)"></i>
+            <button
               v-on:click="diplayCreateComment(articleId)"
               class="displayPost__item__option__button far fa-comment-dots"
               aria-label="Commenter le message"
-            ></i>
+            >
+              commenter<i class="fas fa-check"></i>
+            </button>
+
             <!-- <span
               v-if="article.comment.length > 0"
               class="displayPost__item__option__count"
@@ -173,40 +169,34 @@
             -->
           </div>
 
-          <i
-            v-if="userId == article.userId || isAdmin == 'true'"
-            @click="displayModifyPost(articleId)"
-            class="displayPost__item__option__button far fa-edit"
-            aria-label="Modifier le message"
-          ></i>
+          <i v-if="userId == article.userId || isAdmin == 'true'">
+            <button
+              v-on:click.prevent="displayModifyPost(articleId)"
+              class="displayPost__item__option__button far fa-edit"
+              aria-label="Modifier le message"
+            >
+              modifier<i class="fas fa-check"></i>
+            </button>
 
-          <i
-            v-if="userId == article.userId || isAdmin == 'true'"
-            v-on:click="deletePost(articleId)"
+            ></i
+          >
+
+          <i v-if="userId == article.userId || isAdmin == 'true'"></i>
+          <button
+            v-on:click.prevent="deletePost(article.id)"
             class="displayPost__item__option__button far fa-trash-alt"
             aria-label="Supprimer le message"
-          ></i>
+          >
+            suprimer <i class="fas fa-check"></i>
+          </button>
         </div>
       </div>
 
       <div>
-        <div class="displayComment" v-for="comment in comments" :key="comment.commentId">
-          <div
-            v-bind:showComment="showComment"
-            v-if="showComment && articleId == comment.articleId"
-            class="displayComment__item"
-          >
+        <div class="displayComment" v-for="comment in article.comments" :key="comment.id">
+          <div class="displayComment__item">
             <div class="displayComment__item__information">
-              <div class="displayComment__item__information__user">
-                <ProfileImage
-                  :src="comment.user.imageProfile"
-                  class="displayPost__item__information__user__photo"
-                />
-
-                <h2 class="displayComment__item__information__user__name">
-                  {{ comment.user.pseudo }}
-                </h2>
-              </div>
+              <div class="displayComment__item__information__user"></div>
 
               <div>
                 <span class="displayPost__item__information__date"
@@ -230,17 +220,16 @@
         </div>
 
         <div
-          :formId="article.id"
-          style="display: none"
+          :formId="articleId"
           v-bind:showCreateComment="showCreateComment"
           class="displayComment__newComment"
         >
           <form
-            @submit.prevent="createComment(article.id)"
+            @submit.prevent="createComment(article)"
             class="displayComment__newComment__form"
           >
             <textarea
-              v-model="contentComment"
+              v-model="message"
               class="displayComment__newComment__form__text"
               name="comment"
               id="comment"
@@ -250,6 +239,7 @@
 
             <div>
               <button
+                type="submit"
                 class="displayComment__newComment__form__button"
                 aria-label="Publier le commentaire"
               >
@@ -270,7 +260,6 @@
 import moment from "moment";
 import { Notyf } from "notyf";
 import "notyf/notyf.min.css";
-
 import Navbar from "@/components/Navbar.vue";
 import ProfileImage from "../components/ProfileImage.vue";
 //import Likes from '../components/Likes.vue'
@@ -294,6 +283,7 @@ export default {
       content: "",
       contentmodifyPost: "",
       comments: [],
+      comment: "",
       content: "",
       //like: false,
       //postLikes: [],
@@ -348,7 +338,6 @@ export default {
           this.notyf.error(msgerror);
         });
     },
-
     // Permet d'afficher tous les messages
     displayPost() {
       const article = {
@@ -357,11 +346,13 @@ export default {
         userId: this.userId,
       };
       console.log("displayPost");
-
       fetch("http://localhost:3000/api/article")
         .then((response) => response.json())
         .then((data) => {
           this.articles = data.articles;
+          for (let article of this.articles) {
+            this.displayComment(article);
+          }
         })
         .catch((error) => {
           const msgerror = error;
@@ -374,200 +365,158 @@ export default {
         return moment(String(date)).format("DD/MM/YYYY");
       }
     },
-  },
-  // Permet d'afficher le champ pour modifier un message
-  displayModifyPost(id) {
-    const postId = id;
-    this.showInputModify == false;
-    let input = document.querySelector('div[inputId="' + id + '"]');
-    let inputId = input.getAttribute("inputId");
-    let contentArticle = document.querySelector('p[contentArticleId="' + id + '"]');
-    let contentPostId = contentArticle.getAttribute("contentArticleId");
-    let imgPreviewCreateArticle = document.querySelector("#preview");
-    if (
-      postId == inputId &&
-      articleId == contentPostId &&
-      this.showInputModify == false
-    ) {
-      input.style.display = "block";
-      contentArticle.style.display = "none";
-      imgPreviewCreateArticle.style.display = "none";
-      this.showInputModify = !this.showInputModify;
-      let imgPost = document.querySelector('img[imageId="' + id + '"]');
-      let imgPostId = imgPost.getAttribute("imgPostId");
-      if (postId == imgPostId) {
-        imgPost.style.display = "none";
+
+    // Permet d'afficher le champ pour modifier un message
+    displayModifyPost(id) {
+      const postId = id;
+      this.showInputModify == false;
+      let input = document.querySelector('div[inputId="' + id + '"]');
+      let inputId = input.getAttribute("inputId");
+      let contentPost = document.querySelector('p[contentPostId="' + id + '"]');
+      let contentPostId = contentPost.getAttribute("contentPostId");
+      let imgPreviewCreateArticle = document.querySelector("#preview");
+      if (postId == inputId && postId == contentPostId && this.showInputModify == false) {
+        input.style.display = "none";
+        contentPost.style.display = "block";
+        imgPreviewCreateArticle;
+        this.showInputModify = !this.showInputModify;
+        let imgPost = document.querySelector('img[imageId="' + id + '"]');
+        let imgPostId = imgPost.getAttribute("imgPostId");
+        if (postId == imgPostId) {
+          imgPost.style.display = "block";
+        }
+      } else if (postId == inputId && this.showInputModify == true) {
+        input;
+        contentPost;
+        let imgPost = document.querySelector('img[imgageId="' + id + '"]');
+        imgPost;
+        this.showInputModify = !this.showInputModify;
       }
-    } else if (postId == inputId && this.showInputModify == true) {
-      input.style.display = "none";
-      contentPost.style.display = "block";
-      let imgPost = document.querySelector('img[imgageId="' + id + '"]');
-      imgPost.style.display = "block";
-      this.showInputModify = !this.showInputModify;
-    }
-  },
-  // Permet de modifier un message
-  modifyPost(id) {
-    const postId = id;
-    const formData = new FormData();
-    formData.append("content", this.contentmodifyPost);
-    formData.append("image", this.image);
-    const options = {
-      method: "PUT",
-      body: JSON.stringify(article),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    };
-    fetch("http://localhost:3000/api/article/modifyArticle" + postId, formData, options)
-      .then((response) => response.json())
+    },
+    // Permet de modifier un message
+    modifyPost(articleId) {
+      const formData = new FormData();
+      formData.append("content", this.contentmodifyPost);
+      formData.append("image", this.image);
 
-      .then((data) => {
-        localStorage.getItem("token", data.token);
-        localStorage.getItem("articleId", data.articleId);
-        window.location.reload();
-        this.posts = response;
-      })
-      .catch((error) => {
-        const msgerror = error.response;
-        this.notyf.error(msgerror.error);
-      });
-  },
-  // Permet de supprimer un message
-  deletePost(id) {
-    const postId = id;
-    const options = {
-      method: "DELETE",
-      body: JSON.stringify(article),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    };
+      fetch("http://localhost:3000/api/article/")
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          this.notyf.success("message modifié");
+        })
+        .catch((error) => {
+          const msgerror = error.response;
+          this.notyf.error(msgerror.error);
+        });
+    },
 
-    fetch("http://localhost:3000/api/article/deletArticle/" + postId, options)
-      //headers: {
-      // 'Content-Type' : 'application/json',
-      //'Authorization': 'Bearer ' + localStorage.getItem('token')
-      //}
-      //})
-      .then(() => {
-        this.displayPost();
-      })
-      .catch((error) => {
-        const msgerror = error.response.data;
-        this.notyf.error(msgerror.error);
-      });
-  },
+    // Permet de supprimer un message
+    deletePost(articleId) {
+      const options = {
+        method: "DELETE",
 
-  // Permet d'afficher le champ pour créer un nouveau commentaire
-  diplayCreateComment(id) {
-    const postId = id;
-    this.showCreateComment == false;
-    let form = document.querySelector('div[formId="' + id + '"]');
-    let formId = form.getAttribute("formId");
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      };
 
-    if (postId == formId && this.showCreateComment == false) {
-      form.style.display = "block";
-      this.showCreateComment = !this.showCreateComment;
-    } else if (postId == formId && this.showCreateComment == true) {
-      form.style.display = "none";
-      this.showCreateComment = !this.showCreateComment;
-    }
-  },
-  // Permet de créer un nouveau commentaire
-  createComment(id) {
-    const postId = id;
-    const comment = {
-      content: this.content,
-      userId: this.userId,
-      articleId: this.articleId,
-    };
-    const options = {
-      method: "POST",
-      body: JSON.stringify(comment),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    };
-    fetch("http://localhost:3000/api/createComment/" + postId, options)
-      // content: this.contentComment,
-      //},{
-      // headers: {
-      // 'Authorization': 'Bearer ' + localStorage.getItem('token')
-      //}
-      //})
-      .then(() => {
-        window.location.reload();
-      })
-      .catch((error) => {
-        const msgerror = error.response.data;
-        this.notyf.error(msgerror.error);
-      });
-  },
-  // Permet d'afficher les commentaires d'un message
-  displayComment(id) {
-    this.showComment = !this.showComment;
-    const postId = id;
+      fetch("http://localhost:3000/api/article/delete/" + articleId, options)
+        .then((response) => response.json())
+        .then((data) => {
+          this.notyf.success("Votre post a bien été supprimé ! ");
+        })
+        .catch((error) => {
+          const msgerror = error.response.data;
+          this.notyf.error(msgerror.error);
+        });
+    },
+    // Permet d'afficher le champ pour créer un nouveau commentaire
+    diplayCreateComment(id) {
+      const articleId = id;
+      this.showCreateComment == false;
+      let form = document.querySelector('div[formId="' + id + '"]');
+      let formId = form.getAttribute("formId");
+      if (articleId == formId && this.showCreateComment == false) {
+        form.style.display = "block";
+        this.showCreateComment = !this.showCreateComment;
+      } else if (articleId == formId && this.showCreateComment == true) {
+        //form.style.display = "none";
+        this.showCreateComment = !this.showCreateComment;
+      }
+    },
+    // Permet de créer un nouveau commentaire
+    createComment(article) {
+      const comment = {
+        content: this.message,
+        userId: this.userId,
+        articleId: article.id,
+      };
+      const options = {
+        method: "POST",
+        body: JSON.stringify(comment),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      };
 
-    const comment = {
-      content: this.content,
-      userId: this.userId,
-      articleId: this.articleId,
-    };
-    const options = {
-      method: "GET",
-      body: JSON.stringify(comment),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    };
-    fetch("http://localhost:3000/api/comment/getAllComments" + postId, options)
-      // headers: {
-      // 'Content-Type' : 'application/json',
-      //'Authorization': 'Bearer ' + localStorage.getItem('token')
-      // }
-      //})
-      .then((response) => {
-        this.comments = response.data;
-      })
-      .catch((error) => {
-        const msgerror = error.response.data;
-        this.notyf.error(msgerror.error);
-      });
-  },
-  // Permet de supprimer un commentaire
-  deleteComment(id) {
-    const commentId = id;
-    const comment = {
-      content: this.content,
-      userId: this.userId,
-      articleId: this.articleId,
-    };
-    const options = {
-      method: "DELETE",
-      body: JSON.stringify(comment),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    };
-    fetch("http://localhost:3000/api/comment/deleteComment" + commentId, options)
-      //headers: {
-      //  'Content-Type' : 'application/json',
-      // 'Authorization': 'Bearer ' + localStorage.getItem('token')
-      // }
-      //})
-      .then(() => {
-        window.location.reload();
-      })
-      .catch((error) => {
-        const msgerror = error.response.data;
-        this.notyf.error(msgerror.error);
-      });
+      fetch("http://localhost:3000/api/comment/create", options)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          // this.notyf.sucess("commentaire créé");
+          this.displayComment(article);
+        })
+
+        .catch((error) => {
+          const msgerror = error.response;
+          this.notyf.error(msgerror.error);
+        });
+    },
+    // Permet d'afficher les commentaires d'un message
+    displayComment(article) {
+      //this.showComment = !this.showComment;
+
+      fetch("http://localhost:3000/api/comment/" + article.id)
+        .then((response) => response.json())
+        .then((data) => {
+          article.comments = data.comments;
+        })
+        .catch((error) => {
+          const msgerror = error;
+          this.notyf.error(msgerror.error);
+        });
+    },
+    // Permet de supprimer un commentaire
+    deleteComment(id) {
+      const commentId = id;
+      const comment = {
+        content: this.content,
+        userId: this.userId,
+        articleId: this.articleId,
+      };
+      const options = {
+        method: "DELETE",
+        body: JSON.stringify(comment),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      };
+      fetch("http://localhost:3000/api/comment/deleteComment" + commentId, options)
+        //headers: {
+        //  'Content-Type' : 'application/json',
+        // 'Authorization': 'Bearer ' + localStorage.getItem('token')
+        // }
+        //})
+        .then(() => {})
+        .catch((error) => {
+          const msgerror = error.response.data;
+          this.notyf.error(msgerror.error);
+        });
+    },
   },
 };
 </script>

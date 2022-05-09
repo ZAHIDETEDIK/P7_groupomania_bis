@@ -4,36 +4,37 @@ const mysql = require('mysql');
 
 // Créer un nouveau commentaire 
 exports.createComment = (req, res) => {
-    // Validation de requête
-    if (!req.body) {
-        res.status(400).send({
-            message: "Le contenu ne doit pas être vide !",
-        });
-    }
-    // Création d'un commentaire
-    const comment = new Comment({
-        body: req.body.body,
-        userId: req.body.userId,
-        articleId: req.body.articleId
-    });
+    
     // Sauvegarde dans la DB
-    Comment.create(comment, (err, data) => {
-        if (err) {
-            res.status(500).send({
-                message : err.message || "Des erreurs se sont produites !",
-            });
+    Comment.create({
+     
+         content: req.body.content,
+         userId: req.body.userId,
+         articleId: req.body.articleId,
+        },(err, data) => {
+            if (err) {
+                if (err.code == 'ER_DUP_ENTRY') {
+                    return res.status(401).json({ error: err });
+                }
         }
-        console.log(data);
         res.send(data);
+        console.log(data+'commentaire créé!')
     });
 };
 
 // Récupérer les commentaires par l'id de l'article concerné 
 exports.getAllComments = (req, res) => {
-    Comment.findAll(req.params.articleId)
-    .then(comments => res.status(200).json(comments))
-    .catch(error => res.status(404).json({ error }));
+
+    Comment.findAll(req.params.articleId,(err, data) => {
+        if(err){
+            res.status(500).send({
+                message: err.message || "des erreurs se sont produites",
+            });
+        }
+        res.send(data);
+    })
 };
+
 
 // Modifier un commentaire 
 //exports.updateComment = (req, res) => {

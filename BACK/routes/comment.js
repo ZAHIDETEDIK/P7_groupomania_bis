@@ -13,9 +13,9 @@ const commentCtrl = require('../controllers/comment');
 
 
 // Routes de l'API pour les messages
-router.post('/:articleId',  commentCtrl.createComment);
-router.get('/:articleId', commentCtrl.getAllComments);
-router.delete('/:commentId', auth, commentCtrl.deleteComment);
+router.post('/create/', commentCtrl.createComment);
+router.get('/:articleId',commentCtrl.getAllComments);
+router.delete('/:commentId', commentCtrl.deleteComment);
 
 
 // Permet d'exporter le router
