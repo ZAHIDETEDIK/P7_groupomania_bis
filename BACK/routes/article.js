@@ -4,9 +4,10 @@ const router = express.Router();
 const articleCtrl = require('../controllers/article');
 const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
+const likeCtrl = require('../controllers/likes');
 
 // Création d'un article OK
-router.post('/createArticle/',multer,  articleCtrl.createArticle);
+router.post('/createArticle/', multer, articleCtrl.createArticle);
 
 // Suppression d'un article OK
 router.delete('/delete/:articleId', articleCtrl.deleteArticle);
@@ -28,6 +29,11 @@ router.get('/article/:id',  articleCtrl.getOneArticle);
 
 // Récupérer TOUS les articles d'UN utilisateur OK
 router.get('/article/user/:user.id', articleCtrl.getArticlesOfOneUser);
+
+
+router.post('/:articleId/like', auth, likeCtrl.likeArticle);
+
+router.get('/:articleId/like', auth, likeCtrl.getAllLike);
 
 
 

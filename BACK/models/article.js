@@ -1,5 +1,6 @@
 const express = require('express');
 const mysql = require ('mysql');
+const { resolve } = require('path');
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -12,15 +13,16 @@ const Article = function(article) {
     
     this.content = article.content,
     this.image = article.image,
-    this.userId = article.userId,
-    this.user = article.user
+    this.userId = article.userId
+    
+   
     //this.likes_id=article.likes
 };
 
 //Création d'un article 
  Article.create=(newArticle, result) =>  {
 console.log(newArticle);
-        let sql = `INSERT INTO groupomania.article (content,image,userId,createdAt) Values('${newArticle.content}','${newArticle.image}',${newArticle.userId},${Date.now()});`;
+        let sql = `INSERT INTO groupomania.article(content,image,userId,createdAt)Values('${newArticle.content}','${newArticle.image}','${newArticle.userId}',curdate());`;
         console.log(sql);
         var query= db.query (
             sql
@@ -37,22 +39,26 @@ console.log(newArticle);
             result(null, {id: res.id, ...newArticle});
         }
     }
-    );
+        );
 };
+ 
 
 // Effacer un article par son Id 
-Article.deleteOne = (articleId) => {
+Article.deleteOne = (articleId,result) => {
     
         
-        let sql=`DELETE FROM groupomania.article WHERE id=${articleId};`
+        let sql=`DELETE FROM groupomania.article WHERE id="${articleId}"`
         var query= db.query (
             sql,
-            function (error, result) {
+            function(err,res){ 
+               
+            if (err) {
                 console.log(query);
-                if (error) {
-                    
-                } else {
-                    resolve (result);
+            
+            } else {
+                console.log("aricle supprimé" )
+               
+                result(null);   
                 }
             }
         )
@@ -61,30 +67,30 @@ Article.deleteOne = (articleId) => {
 
 // Modification d'un article OK
 Article.updateOne = (articleId, article) => {
-    return new Promise((resolve, reject) => {
        
         let sql=  `UPDATE groupomania.article content="${article.content}", image="${article.image}" WHERE id="${articleId}"`
         var query= db.query (
             sql,
-            function (error, result) {
-                console.log(query);
-                if (error) {
-                    reject (error);
-                    
+            function(err,res){ 
+               
+                if (err) {
+                    console.log(query);
+                
                 } else {
-                    resolve (result);
-                    console.log("article " + {id: articleId, ...article} + "modifié avec succès");
+                    console.log("article modifier" )
+                   
+                    result(null);   
+                
                 }
             }
         )
-    })
-};
+        }
+
 
 // Chercher tous les articles OK
 Article.findAll = (result) => {
-    
-    let sql=`SELECT article.id,article.content,article.userId,article.image FROM groupomania.article as article INNER JOIN user as user ON user.id = article.userId`
-        var query= db.query (
+    let sql=`SELECT article.id,article.content,article.userId,article.createdAt,user.pseudo FROM groupomania.article as article INNER JOIN user as user ON user.id = article.userId`      
+      var query= db.query (
             sql,
             function(err,res){ 
                 console.log(query);
@@ -100,16 +106,16 @@ Article.findAll = (result) => {
     
        //let sql= "SELECT * FROM groupomania.article ORDER BY createdAt DESC="(result)
         //var query= db.query (
-          //  sql,
-           // function(err,result){  
+           // sql,
+           //function(err,result){  
                // console.log(query);
-       // if (err) {
-                //return;
+        //if (err) {
+               // return;
             //} else {
                 //result(null, {article: res});
            // }
         //}
-   // )};
+    //)};
 
 // Chercher tous les articles par date de mise a jour 
 //Article.findAllByUpdatedAt = (result) => {
@@ -130,22 +136,26 @@ Article.findAll = (result) => {
 //};
 
 // Chercher un article par son id OK
-Article.findOne = (articleId) => {
-    return new Promise((resolve, reject)=> {
+Article.findOne = (articleId,article) => {
+   return new Promise((resolve, reject)=> {
         
-         let sql=`SELECT a.id AS articleId, a.userId AS userId, a.content AS content, a.image AS image,  WHERE a.id=${articleId} AND l.articled = a.id`
-         var query= db.query (
+         let sql=`DELETE FROM groupomania .article content="${article.content}", image="${article.image}" WHERE id="${articleId}"`
+        
+        var query= db.query (
             sql, 
          function (error, result, fields) {
             console.log(query);
-                if (error) { 
-                } else {
+            if (error){ 
+                reject(error)
+              } else {
                     resolve (result);
                 }
-            }
-        )
-    })
-};
+            
+            })
+        })
+    }
+    
+        
 
 // Chercher tous les articles d'un auteur en particulier OK
 Article.findAllByUser = (userId) => {

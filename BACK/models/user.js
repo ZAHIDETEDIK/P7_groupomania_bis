@@ -44,18 +44,16 @@ User.create = (newUser, result) => {
 
 //Supprimer un utilisateur (user ou admin) 
 User.deleteOne =(userId,result) => {
-    let sql = `SELECT * FROM groupomania.user WHERE id=${userId};`
+    let sql = `DELETE FROM groupomania.user WHERE id=${userId};`
     console.log(sql);
     var query =  db.query( sql,
       function
       (err, res){ 
           if (err) {
-              console.log(query);
-          
-              
+              console.log(query); 
           }
           else{ 
-          console.log('supprimé');
+            console.log(query);
           result(null,res[0]);
       }; 
       

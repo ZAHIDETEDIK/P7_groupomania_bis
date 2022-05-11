@@ -21,11 +21,12 @@
             aria-label="Rédiger un nouveau message"
           />
 
-          <div id="preview">
+          <div id="preview" style="display: block">
             <img
               v-if="imagePreview"
               :src="imagePreview"
               id="preview"
+              style="display: block"
               class="newPost__content__image"
               alt="Prévisualisation de l'image ajoutée au message"
             />
@@ -85,6 +86,7 @@
 
           <div
             :inputId="articleId"
+            style="display: none"
             v-bind:showInputModify="showInputModify"
             class="displayPost__item__publication__text__modifyText"
           >
@@ -100,7 +102,7 @@
               <div class="displayPost__item__publication__text__modifyText__option__file">
                 <button
                   @click="uploadFile"
-                  type="submit"
+                  type="button"
                   class="displayPost__item__publication__text__modifyText__option__file__btnInvisible"
                 >
                   <i class="far fa-images fa-2x"></i> Choisir un fichier
@@ -152,14 +154,13 @@
           <Likes v-bind:post="article" />
 
           <div>
-            <i @click="displayComment(articleId)"></i>
-            <button
+            <i
+              @click="displayComment(articleId)"
               v-on:click="diplayCreateComment(articleId)"
               class="displayPost__item__option__button far fa-comment-dots"
               aria-label="Commenter le message"
             >
-              commenter<i class="fas fa-check"></i>
-            </button>
+            </i>
 
             <!-- <span
               v-if="article.comment.length > 0"
@@ -169,23 +170,20 @@
             -->
           </div>
 
-          <i v-if="userId == article.userId || isAdmin == 'true'">
-            <button
-              v-on:click.prevent="displayModifyPost(articleId)"
-              class="displayPost__item__option__button far fa-edit"
-              aria-label="Modifier le message"
-            >
-              modifier<i class="fas fa-check"></i>
-            </button>
-
-            ></i
+          <i
+            v-if="userId == article.userId || isAdmin == 'true'"
+            v-on:click.prevent="modifyPost(article.id)"
+            class="displayPost__item__option__button far fa-edit"
+            aria-label="Modifier le message"
           >
+          </i>
 
           <i v-if="userId == article.userId || isAdmin == 'true'"></i>
           <button
             v-on:click.prevent="deletePost(article.id)"
             class="displayPost__item__option__button far fa-trash-alt"
-            aria-label="Supprimer le message"
+            aria-label="Supprimer
+          le message"
           >
             suprimer <i class="fas fa-check"></i>
           </button>
@@ -256,7 +254,7 @@
 </template>
 
 <script>
-//import axios from 'axios'
+//import axios from "axios";
 import moment from "moment";
 import { Notyf } from "notyf";
 import "notyf/notyf.min.css";
@@ -285,8 +283,8 @@ export default {
       comments: [],
       comment: "",
       content: "",
-      //like: false,
-      //postLikes: [],
+      like: false,
+      postLikes: [],
       revele: false,
       showComment: false,
       showCreateComment: false,
@@ -306,11 +304,10 @@ export default {
   methods: {
     // Permet de créer un nouveau message
     uploadFile() {
-      this.$refs.fileUpload.click();
+      this.$refs.uploadFile.click();
     },
     onFileSelected(event) {
-      this.imagePost = event.target.files[0];
-      this.imagePreview = URL.createObjectURL(this.imagePost);
+      this.image = event.target.files[0];
     },
     createPost() {
       const article = {
@@ -331,6 +328,7 @@ export default {
         .then((data) => {
           this.notyf.success("Votre post a bien été créé ! ");
           this.displayPost();
+
           //this.$router.push('/');
         })
         .catch((error) => {
@@ -366,48 +364,29 @@ export default {
       }
     },
 
-    // Permet d'afficher le champ pour modifier un message
-    displayModifyPost(id) {
-      const postId = id;
-      this.showInputModify == false;
-      let input = document.querySelector('div[inputId="' + id + '"]');
-      let inputId = input.getAttribute("inputId");
-      let contentPost = document.querySelector('p[contentPostId="' + id + '"]');
-      let contentPostId = contentPost.getAttribute("contentPostId");
-      let imgPreviewCreateArticle = document.querySelector("#preview");
-      if (postId == inputId && postId == contentPostId && this.showInputModify == false) {
-        input.style.display = "none";
-        contentPost.style.display = "block";
-        imgPreviewCreateArticle;
-        this.showInputModify = !this.showInputModify;
-        let imgPost = document.querySelector('img[imageId="' + id + '"]');
-        let imgPostId = imgPost.getAttribute("imgPostId");
-        if (postId == imgPostId) {
-          imgPost.style.display = "block";
-        }
-      } else if (postId == inputId && this.showInputModify == true) {
-        input;
-        contentPost;
-        let imgPost = document.querySelector('img[imgageId="' + id + '"]');
-        imgPost;
-        this.showInputModify = !this.showInputModify;
-      }
-    },
     // Permet de modifier un message
     modifyPost(articleId) {
+      const options = {
+        method: "PUT",
+
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      };
       const formData = new FormData();
       formData.append("content", this.contentmodifyPost);
       formData.append("image", this.image);
 
-      fetch("http://localhost:3000/api/article/")
+      fetch("http://localhost:3000/api/article" + articleId, options)
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
           this.notyf.success("message modifié");
         })
         .catch((error) => {
-          const msgerror = error.response;
-          this.notyf.error(msgerror.error);
+          const msgerror = error.response.data;
+          this.notyf.error(msgerror);
         });
     },
 
@@ -425,11 +404,13 @@ export default {
       fetch("http://localhost:3000/api/article/delete/" + articleId, options)
         .then((response) => response.json())
         .then((data) => {
+          console.log(data);
+          this.displayPost();
           this.notyf.success("Votre post a bien été supprimé ! ");
         })
         .catch((error) => {
           const msgerror = error.response.data;
-          this.notyf.error(msgerror.error);
+          this.notyf.error(msgerror);
         });
     },
     // Permet d'afficher le champ pour créer un nouveau commentaire
@@ -442,7 +423,7 @@ export default {
         form.style.display = "block";
         this.showCreateComment = !this.showCreateComment;
       } else if (articleId == formId && this.showCreateComment == true) {
-        //form.style.display = "none";
+        form.style.display = "none";
         this.showCreateComment = !this.showCreateComment;
       }
     },

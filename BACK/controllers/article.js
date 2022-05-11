@@ -11,7 +11,7 @@ exports.createArticle = (req, res, next) => {
         Article.create({
         
             content: req.body.content,
-            image:req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}`: req.body.image,
+            image: req.body.image,
             userId: req.body.userId,
         },(err, data) => {
             if (err) {
@@ -21,43 +21,45 @@ exports.createArticle = (req, res, next) => {
             }
             res.send(data);
             console.log(data + 'post créé !');
-        }); 
-        //.then(() => res.status(201).json({message: 'Post créé !'}))
-        //.catch( error => res.status(400).json({error}));
+        });
+    } ;
     
     
-};
+
 // suppprimer un article OK
-exports.deleteArticle = (req, res, next) => {
-    Article.findOne(req.params.articleId)
-    .then((article) => {
-     Article.deleteOne(req.params.articleId) 
-     .then(() => res.status(200).json({ message: 'Message supprimé' }))
-                .catch(error => res.status(400).json({ error }));
-         
-     })  
+exports.deleteArticle = (req, res) => {
     
-    .catch(error => res.status(500).json({ error }));
-}
+     Article.deleteOne (req.params.articleId,(article)=>{
+        if(article) {
+
+            res.status(200).json(article);
+        } else {
+            res.status(400).json({ error: 'post suprimmé' })
+  }
+})
+};
+     
+     
+    
+  
+
 
 // modifier un Article OK !! format de date !!
 exports.modifyArticle = (req, res, next) => {
-    let article = req.body;
-    let articleId = req.params.articleId;
-    console.log(articleId + " " + article);
-    Article.updatedOne((err,data)=>{ 
-        if(err){
-            res.status(500).send({
-                message: err.message || "des erreurs se sont produites",
-            });
-        }
-        res.send(data);
-      });
-    }
+    //let article = req.body;
+    
+    Article.updatedOne (req.params.articleId,(article)=>{ 
+        if(article) {
 
+            res.status(200).json(article);
+        } else {
+            res.status(400).json({ error: 'post non modifié' })
+      }
+    })
+}
 
 // récupérer TOUS les articles de TOUS les utilisateurs OK
-exports.getArticle = (req, res, next) => {
+exports.getArticle = (req, res) => {
     Article.findAll((err, data) => {
         if(err){
             res.status(500).send({
@@ -73,10 +75,10 @@ exports.getArticle = (req, res, next) => {
   //  Article.findAllByCreatedAt((err, data) => {
        // if(err){
           // res.status(500).send({
-               // message: err.message || "des erreurs se sont produites",
-            //});
+              //  message: err.message || "des erreurs se sont produites",
+           // });
         //}
-        //res.send(data);
+       // res.send(data);
     //})
 //};
 // récupérer TOUS les articles triés par date de mise ajour OK

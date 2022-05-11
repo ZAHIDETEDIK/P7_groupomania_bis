@@ -79,10 +79,14 @@ export default {
       fetch("http://localhost:3000/api/user/login", options)
         .then((response) => response.json())
         .then((data) => {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("userId", data.userId);
-          this.notyf.success("vous êtes connecté");
-          this.$router.push("/Post");
+          if (data.token == undefined) {
+            this.notyf.error(data.error);
+          } else {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("userId", data.userId);
+            this.notyf.success("vous êtes connecté");
+            this.$router.push("/Post");
+          }
         })
         .catch((error) => {
           const msgerror = error.response;

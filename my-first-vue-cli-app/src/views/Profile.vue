@@ -8,8 +8,8 @@
         <h2>Vos informations</h2>
 
         <div class="profile__photo">
-          <ProfileImage :src="user.imageProfile" class="profile__photo__image" />
-
+          <!-- <ProfileImage :src="user.imageProfile" class="profile__photo__image" />
+-->
           <div class="profile__photo__modify">
             <button
               @click="uploadFile"

@@ -14,11 +14,7 @@
         </div>
       </div>
 
-      <button
-        v-if="userId || isAdmin == 'true'"
-        @click="deleteAccount"
-        class="modaleBloc__card__button"
-      >
+      <button @click="deleteAccount" class="modaleBloc__card__button">
         Oui, je supprime mon compte
       </button>
     </div>
@@ -32,12 +28,7 @@ import "notyf/notyf.min.css";
 export default {
   name: "ModaleDeleteAccount",
   props: ["revele", "displayModale"],
-  data() {
-    return {
-      userId: localStorage.getItem("userId"),
-      user: null,
-    };
-  },
+
   created() {
     this.notyf = new Notyf({
       duration: 2000,
@@ -47,29 +38,32 @@ export default {
       },
     });
   },
+  methods: {
+    // Permet de supprimer le compte
+    deleteAccount() {
+      const userId = localStorage.getItem("userId");
+      const options = {
+        method: "DELETE",
 
-  // Permet de supprimer le compte
-  deleteAccount(userId) {
-    const options = {
-      method: "DELETE",
-
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    };
-    fetch("http://localhost:3000/api/user/delete/" + userId, options)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        this.notyf.success("Votre compte a bien été supprimé");
-        localStorage.clear();
-        this.$router.push("/");
-      })
-      .catch((error) => {
-        const msgerror = error.response.data;
-        this.notyf.error(msgerror.error);
-      });
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      };
+      fetch("http://localhost:3000/api/user/delete/" + userId, options)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data);
+          this.notyf.success("Votre compte a bien été supprimé");
+          localStorage.getItem("userId", data.userId);
+          localStorage.clear();
+          this.$router.push("/");
+        })
+        .catch((error) => {
+          const msgerror = error.response.data;
+          this.notyf.error(msgerror.error);
+        });
+    },
   },
 };
 </script>
