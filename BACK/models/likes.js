@@ -1,19 +1,24 @@
 const mysql = require('mysql');
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+});
 
-// Constructeur
-const LikeDislike = function(likeDislike) {
-    this.likes = likeDislike.likes,
-    this.dislikes = likeDislike.dislikes,
-    this.users_id = likeDislike.userId,
-    this.article_id = likeDislike.articleId
-};
+const Like=function(like){ 
+this.article=like.article,
+this.comment=like.comment
 
 // Like un article
-LikeDislike.like = (newLike, result) => {
-    return new Promise((resolve, reject) => {
-        db.query(
-            "INSERT INTO groupomania.likes SET ?", newLike,
-            (err, res) => {
+like.create = (newLike, result) => {
+    console.log(newLike);
+     let sql = `INSERT INTO groupomania.like (article,content)Values('${newLike.article}','(${newLike.comment};`;
+      console.log(sql);
+      var query= db.query (
+        sql
+        ,function
+            (err, res){ 
                 if (err) {
                     console.log("error: " +err);
                     result(err, null);
@@ -23,57 +28,8 @@ LikeDislike.like = (newLike, result) => {
                 result(null, {id: res.id, ...newLike});
             }
         )
-    })
+    }
 };
 
-// Dislike un article
-LikeDislike.dislike = (newLike, result) => {
-    return new Promise((resolve, reject) => {
-        db.query(
-            "INSERT INTO groupomania.likes SET ?", newLike,
-            (err, res) => {
-                if (err) {
-                    console.log("error: " +err);
-                    result(err, null);
-                    return;
-                }
-                console.log("Dislike créé " + {id: res.id, ...newLike });
-                result(null, {id: res.id, ...newLike});
-            }
-        )
-    })
-};
 
-// Annuler un Like/Dislike article
-LikeDislike.cancelLikeDislike = (articleId, userId) => {
-    return new Promise((resolve, reject) => {
-        db.query(
-            `DELETE FROM groupomania.likes WHERE articles_id=${articleId} AND users_id=${userId}`,
-            function (error, result) {
-                if (error) {
-                    reject (error);
-                } else {
-                    resolve(result);
-                }
-            }
-        )
-    })
-};
 
-// Trouver les avis d'un article
-LikeDislike.findByArticleId = (articleId) => {
-    return new Promise((resolve, reject) => {
-        db.query(
-            `SELECT * FROM groupomania.likes WHERE articles_id=${articleId}`,
-            function (error, result, fields) {
-                if (error) {
-                    reject (error);
-                } else {
-                    resolve (result);
-                }
-            }
-        )
-    })
-};
-
-module.exports = LikeDislike;
