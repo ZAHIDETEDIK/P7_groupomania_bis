@@ -27,7 +27,7 @@ router.post("/logout", auth, userCtrl.logout);
 router.get("/getUser/:id", userCtrl.getOneUserById);
 
 // Modifier les données utilisateur
-router.put("/update/:id", auth, userCtrl.updateUser);
+router.put("/:id", multer,userCtrl.updateUser);
 
 // Effacer un utilisateur (Admin)
 router.delete("/delete/:id", userCtrl.deleteUser);

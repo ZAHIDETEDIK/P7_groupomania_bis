@@ -17,7 +17,7 @@ const User = function (user) {
 
 //Création d'un utilisateur
 User.create = (newUser, result) => {
-  let sql = `INSERT INTO groupomania.user (email,password, pseudo,isAdmin) Values('${newUser.email}','${newUser.password}','${newUser.pseudo}','${newUser.isAdmin}');`;
+  let sql = `INSERT INTO groupomania.user (email,password, pseudo,isAdmin,imageProfile) Values('${newUser.email}','${newUser.password}','${newUser.pseudo}','${newUser.isAdmin}','${newUser.imageProfile}');`;
   console.log(sql);
   var query = db.query(sql, function (err, res) {
     console.log(query);
@@ -87,8 +87,8 @@ User.findAll = function getAllUsers(userId, user) {
 };
 
 //Mettre a jour les données d'un utilisateur
-User.updateOne = (userId, user) => {
-  let sql = `UPDATE groupomania.user pseudo="${user.pseudo}", email="${user.email}", imageProfile="${user.imageProfile}", isAdmin="${user.isAdmin}" WHERE id=${userId};`;
+User.updateOne = (userId,user) => {
+  let sql = `UPDATE FROM  groupomania.user imageProfile='${user.imageProfile}', isAdmin='${user.isAdmin}' WHERE id=${user};`;
   var query = db.query(sql, function (err, res) {
     if (err) {
       console.log(query);

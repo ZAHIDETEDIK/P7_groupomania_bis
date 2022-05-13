@@ -43,10 +43,7 @@
         </button>
       </div>
 
-      <ModaleDeleteAccount
-        v-bind:revele="revele"
-        v-bind:displayModale="displayModale"
-      />
+      <ModaleDeleteAccount v-bind:revele="revele" v-bind:displayModale="displayModale" />
       <button class="profile__bigButton" v-on:click="displayModale">
         Supprimer mon compte <i class="far fa-trash-alt"></i>
       </button>
@@ -55,7 +52,6 @@
 </template>
 
 <script>
-//import axios from 'axios'
 import { Notyf } from "notyf";
 import "notyf/notyf.min.css";
 import Navbar from "@/components/Navbar.vue";
@@ -71,7 +67,7 @@ export default {
   data() {
     return {
       userId: localStorage.getItem("userId"),
-      user: null,
+      user: "",
       pseudo: "",
       email: "",
       imageProfile: null,
@@ -120,7 +116,7 @@ export default {
       };
       const formData = new FormData();
       formData.append("image", this.imageProfile);
-      fetch("http://localhost:3000/api/user/", formData)
+      fetch("http://localhost:3000/api/user/" + this.userId, options, formData)
         .then((response) => response.json())
         .then((data) => {
           this.notyf.success("Votre profil a bien été modifié !");
@@ -151,7 +147,7 @@ h2 {
   min-width: 40%;
   max-width: 60%;
   margin: 3rem auto;
-  background: #ffb1b1;
+  background: #f0acac;
   border-radius: 25px;
   @media (max-width: 500px) {
     min-width: 80%;
@@ -170,11 +166,11 @@ h2 {
     }
     &__modify__btnInvisible {
       border: none;
-      background-color: #ffb1b1;
-      color: #3f3d56;
+      background-color: #ec9e9e;
+      color: #000000;
       &:hover,
       &:focus {
-        color: white;
+        color: rgb(66, 6, 6);
         cursor: pointer;
       }
     }
@@ -198,7 +194,7 @@ h2 {
   &__smallButton {
     border: 2px solid #3f3d56;
     border-radius: 25px;
-    color: #3f3d56;
+    color: #000000;
     font-size: 15px;
     font-weight: bold;
     padding: 0.4rem;
@@ -207,14 +203,14 @@ h2 {
     background: white;
     &:hover,
     &:focus {
-      color: #ff6363;
+      color: #610303;
       cursor: pointer;
     }
   }
   &__bigButton {
     border: 3px solid #3f3d56;
     border-radius: 25px;
-    color: #3f3d56;
+    color: #000000;
     font-size: 15px;
     font-weight: bold;
     padding: 0.9rem;
@@ -222,8 +218,8 @@ h2 {
     outline-style: none;
     &:hover,
     &:focus {
-      border: 3px solid #ff6363;
-      color: #ff6363;
+      border: 3px solid #610303;
+      color: #070000;
       cursor: pointer;
     }
   }

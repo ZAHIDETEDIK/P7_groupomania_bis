@@ -89,7 +89,7 @@ export default {
   &__card {
     z-index: 2;
     position: fixed;
-    background: #f1f1f1;
+    background: #f1f200;
     color: #3f3d56;
     &__title {
       display: flex;
@@ -106,17 +106,17 @@ export default {
         position: absolute;
         top: 1rem;
         right: 1rem;
-        color: #3f3d56;
+        color: #000000;
         &:hover,
         &:focus {
-          color: #ff6363;
+          color: #740000;
         }
       }
     }
     &__button {
       border: 3px solid #3f3d56;
       border-radius: 25px;
-      color: #3f3d56;
+      color: #000000;
       font-size: 15px;
       font-weight: bold;
       padding: 0.9rem;
@@ -125,7 +125,7 @@ export default {
       &:hover,
       &:focus {
         border: 3px solid #ff6363;
-        color: #ff6363;
+        color: #630505;
       }
     }
   }

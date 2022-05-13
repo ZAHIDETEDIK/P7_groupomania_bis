@@ -17,7 +17,7 @@
             class="newPost__content__text"
             name="message"
             id="message"
-            placeholder="BONJOUR ?"
+            placeholder="BONJOUR "
             aria-label="Rédiger un nouveau message"
           />
 
@@ -182,7 +182,7 @@
             aria-label="Supprimer
           le message"
           >
-            suprimer <i class="fas fa-check"></i>
+            supprimer <i class="fas fa-check"></i>
           </button>
         </div>
       </div>
@@ -251,13 +251,12 @@
 </template>
 
 <script>
-//import axios from "axios";
 import moment from "moment";
 import { Notyf } from "notyf";
 import "notyf/notyf.min.css";
 import Navbar from "@/components/Navbar.vue";
 import ProfileImage from "../components/ProfileImage.vue";
-//import Likes from '../components/Likes.vue'
+
 export default {
   name: "Post",
   components: {

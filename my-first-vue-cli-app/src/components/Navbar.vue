@@ -25,22 +25,15 @@
       >
         <ul class="navbar-nav nav__links">
           <li class="nav-item">
-            <router-link to="/post" class="nav__links__link"
-              >Accueil</router-link
-            >
+            <router-link to="/post" class="nav__links__link">Accueil</router-link>
           </li>
 
           <li class="nav-item">
-            <router-link to="/profile" class="nav__links__link"
-              >Mon profil</router-link
-            >
+            <router-link to="/profile" class="nav__links__link">Mon profil</router-link>
           </li>
 
           <li class="nav-item">
-            <ModaleLogout
-              v-bind:revele="revele"
-              v-bind:displayModale="displayModale"
-            />
+            <ModaleLogout v-bind:revele="revele" v-bind:displayModale="displayModale" />
             <button @click="displayModale" class="nav__links__logoutLink">
               Déconnexion <i class="fas fa-sign-out-alt"></i>
             </button>
@@ -89,18 +82,15 @@ export default {
   }
   &__menuButton:hover,
   &__menuButton:focus {
-    color: #ff6363;
+    color: #630505;
   }
   a,
   button {
     font-weight: bold;
-    color: #3f3d56;
-    // &.router-link-exact-active {
-    // color: #ff6363;
-    // }
+    color: #000000;
     &:hover,
     &:focus {
-      color: #ff6363;
+      color: #630505;
     }
   }
   &__links {
@@ -117,15 +107,6 @@ export default {
         padding: 0;
       }
     }
-    // &__logoutLink {
-    //  border: none;
-    // background-color: white;
-    //  &:hover, &:focus  {
-    // color: #ff6363;
-    //}
-    // @media (max-width: 990px) {
-    //  padding-right: 0;
-    //}
   }
 }
 </style>

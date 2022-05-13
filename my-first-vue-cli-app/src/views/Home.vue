@@ -3,12 +3,16 @@
     <img
       class="home__title"
       src="../assets/icon-above-font.png"
-      alt="Logo de Groupomania"
+      alt="Logo gauche de Groupomania"
     />
 
     <div class="home__display">
       <div class="home__display__picture">
-        <img class="home__display__picture" src="../assets/icon.png" alt="logo" />
+        <img
+          class="home__display__picture"
+          src="../assets/icon.png"
+          alt="logo simple de groupomania"
+        />
       </div>
 
       <form @submit.prevent="login" class="home__display__form">
@@ -40,7 +44,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { Notyf } from "notyf";
 import "notyf/notyf.min.css";
 export default {

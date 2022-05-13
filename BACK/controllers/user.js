@@ -104,7 +104,7 @@ exports.logout = (req, res) => {
 // Modifications des données utilisateur
 exports.updateUser =(req, res) => {
     
-    User.updateOne()(req.params.id, req.body ,(err, user) => {
+    User.updateOne()(req.params.id,( user) => {
         if(user) {
 
             res.status(200).json(user);
