@@ -8,8 +8,8 @@
         <h2>Vos informations</h2>
 
         <div class="profile__photo">
-          <!-- <ProfileImage :src="user.imageProfile" class="profile__photo__image" />
--->
+          <ProfileImage :src="imageProfile" class="profile__photo__image" />
+
           <div class="profile__photo__modify">
             <button
               @click="uploadFile"
@@ -43,7 +43,10 @@
         </button>
       </div>
 
-      <ModaleDeleteAccount v-bind:revele="revele" v-bind:displayModale="displayModale" />
+      <ModaleDeleteAccount
+        v-bind:revele="revele"
+        v-bind:displayModale="displayModale"
+      />
       <button class="profile__bigButton" v-on:click="displayModale">
         Supprimer mon compte <i class="far fa-trash-alt"></i>
       </button>
@@ -69,7 +72,6 @@ export default {
     return {
       userId: localStorage.getItem("userId"),
       user: null,
-
       pseudo: "",
       email: "",
       imageProfile: null,
@@ -89,7 +91,6 @@ export default {
   methods: {
     // Permet d'afficher les informations de profil
     displayProfile() {
-      //const userId = localStorage.getItem("userId");
       fetch("http://localhost:3000/api/user/getUser/" + this.userId)
         .then((response) => response.json())
         .then((data) => {
@@ -101,7 +102,6 @@ export default {
           this.notyf.error(msgerror);
         });
     },
-
     // Permet de modifier la photo de profil
     uploadFile() {
       this.$refs.fileUpload.click();
@@ -110,11 +110,17 @@ export default {
       this.imageProfile = event.target.files[0];
     },
     modifyProfile() {
-      //const userId = localStorage.getItem("userId");
+      const options = {
+        method: "PUT",
+
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      };
       const formData = new FormData();
       formData.append("image", this.imageProfile);
-
-      fetch("http://localhost:3000/api/user/updateUser" + userId)
+      fetch("http://localhost:3000/api/user/", formData)
         .then((response) => response.json())
         .then((data) => {
           this.notyf.success("Votre profil a bien été modifié !");

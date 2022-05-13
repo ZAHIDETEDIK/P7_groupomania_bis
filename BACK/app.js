@@ -9,7 +9,6 @@ const db= require('./config/db')
 const userRoutes = require('./routes/user');
 const articleRoutes = require('./routes/article');
 const commentRoutes = require('./routes/comment');
-const likeRoutes = require('./routes/likes');
 
 const app = express();
 
@@ -35,6 +34,6 @@ app.use(bodyParser.json());
 app.use('/api/user', userRoutes);
 app.use('/api/article', articleRoutes);
 app.use('/api/comment', commentRoutes);
-app.use('/api/like', likeRoutes);
+
 
 module.exports = app;

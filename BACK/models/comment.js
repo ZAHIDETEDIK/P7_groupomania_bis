@@ -18,7 +18,7 @@ const db = mysql.createConnection({
 // Création d'un commentaire 
 Comment.create = (newComment, result) => {
     console.log(newComment);
-  let sql= `INSERT INTO groupomania.comment(content,userId,articleId)Values('${newComment.content}','${newComment.userId}','${newComment.articleId}');`;
+  let sql= `INSERT INTO groupomania.comment(content,userId,articleId,createdAt)Values('${newComment.content}','${newComment.userId}','${newComment.articleId}',curdate());`;
   var query= db.query (
     sql
     ,function   (err, res) {
@@ -37,7 +37,7 @@ Comment.create = (newComment, result) => {
 
 // Chercher tous les commentaires d'un article 
 Comment.findAll = (articleId,result) => {
-    //return new Promise((resolve, reject) => {
+
         
           let sql = `SELECT comment.id,comment.content,comment.articleId
            FROM groupomania.comment as comment  

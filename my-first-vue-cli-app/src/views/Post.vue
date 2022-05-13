@@ -2,7 +2,7 @@
   <div id="article">
     <Navbar />
 
-    <h1 class="invisible">Fil d'actualité</h1>
+    <h1>Fil d'actualité</h1>
 
     <div class="newPost">
       <div class="newPost__photo">
@@ -17,11 +17,11 @@
             class="newPost__content__text"
             name="message"
             id="message"
-            placeholder="Quoi de neuf ?"
+            placeholder="BONJOUR ?"
             aria-label="Rédiger un nouveau message"
           />
 
-          <div id="preview" style="display: block">
+          <div id="preview">
             <img
               v-if="imagePreview"
               :src="imagePreview"
@@ -80,7 +80,11 @@
         </div>
 
         <div class="displayPost__item__publication">
-          <p :contentPostId="articleId" class="displayPost__item__publication__text">
+          <p
+            :contentPostId="articleId"
+            style="display: block"
+            class="displayPost__item__publication__text"
+          >
             {{ article.content }}
           </p>
 
@@ -101,7 +105,7 @@
             <div class="displayPost__item__publication__text__modifyText__option">
               <div class="displayPost__item__publication__text__modifyText__option__file">
                 <button
-                  @click="uploadFile"
+                  click="uploadFile"
                   type="button"
                   class="displayPost__item__publication__text__modifyText__option__file__btnInvisible"
                 >
@@ -118,7 +122,7 @@
               </div>
 
               <button
-                v-on:click="modifyPost(articleId)"
+                v-on:click="modifyPost(article.id)"
                 class="displayPost__item__publication__text__modifyText__option__button"
                 aria-label="Enregistrer les modifications"
               >
@@ -144,6 +148,7 @@
           <img
             v-if="article.image"
             :imgPostId="articleId"
+            tyle="display:block"
             :src="article.image"
             class="displayPost__item__publication__image"
             alt="Image insérée dans le message"
@@ -161,15 +166,7 @@
               aria-label="Commenter le message"
             >
             </i>
-
-            <!-- <span
-              v-if="article.comment.length > 0"
-              class="displayPost__item__option__count"
-              >{{ article.comment.length }}</span
-            >
-            -->
           </div>
-
           <i
             v-if="userId == article.userId || isAdmin == 'true'"
             v-on:click.prevent="modifyPost(article.id)"
@@ -283,8 +280,8 @@ export default {
       comments: [],
       comment: "",
       content: "",
-      like: false,
-      postLikes: [],
+      //like: false,
+      // postLikes: [],
       revele: false,
       showComment: false,
       showCreateComment: false,
@@ -304,12 +301,17 @@ export default {
   methods: {
     // Permet de créer un nouveau message
     uploadFile() {
-      this.$refs.uploadFile.click();
+      this.$refs.fileUpload.click();
     },
     onFileSelected(event) {
       this.image = event.target.files[0];
+      this.imagePreview = URL.createObjectURL(this.image);
     },
     createPost() {
+      const formData = new FormData();
+      formData.append("content", this.content);
+      formData.append("image", this.imagePost);
+
       const article = {
         content: this.content,
         image: this.image,
@@ -323,7 +325,7 @@ export default {
           "Content-Type": "application/json",
         },
       };
-      fetch("http://localhost:3000/api/article/createArticle", options)
+      fetch("http://localhost:3000/api/article/createArticle", options, formData)
         .then((response) => response.json())
         .then((data) => {
           this.notyf.success("Votre post a bien été créé ! ");
@@ -336,6 +338,7 @@ export default {
           this.notyf.error(msgerror);
         });
     },
+
     // Permet d'afficher tous les messages
     displayPost() {
       const article = {

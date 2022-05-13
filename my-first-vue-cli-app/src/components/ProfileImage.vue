@@ -1,6 +1,6 @@
 <template>
   <div class="newPost__photo">
-    <img :src="src || 'user-circle-solid.svg'" class="image" alt="Photo de profil" />
+    <img :src="src || 'circle-user-solid.svg'" class="image" alt="Photo de profil" />
   </div>
 </template>
 
@@ -13,9 +13,8 @@ export default {
 
 <style lang="scss">
 .image {
-  object-fit: cover;
-  width: 3rem;
-  height: 3rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 100%;
 }
 </style>

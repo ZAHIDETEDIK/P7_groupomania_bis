@@ -103,21 +103,32 @@ exports.logout = (req, res) => {
 
 // Modifications des données utilisateur
 exports.updateUser =(req, res) => {
-    let user = (req.body);
-    let userId = req.params.userId;
-    console.log(userId + " " + user);
-    User.updateOne(userId, user)
-    .then(() => res.status(200).json({ message: 'Utilisateur modifié !'}))
-    .catch(error => res.status(404).json({ error }));
+    
+    User.updateOne()(req.params.id, req.body ,(err, user) => {
+        if(user) {
+
+            res.status(200).json(user);
+        } else {
+            res.status(404).json({ error: 'pas de modification' })
+        
+   }
+}) 
+ 
 }
 
-// Trouver Un utilisateur par son id 
-//exports.getOneUserById = (req, res) => {
-    //User.findById(req.params.id)
-    //.then(user => res.status(200).json(user))
-    ////.catch(error => res.status(404).json({ error }));
-//};
+exports.getOneUserById = (req, res) => {
+    
+    User.findById(req.params.id, (err, user) => {
+console.log("hello");
+        if(user) {
 
+             res.status(200).json(user);
+         } else {
+             res.status(404).json({ error: 'Utilisateur non trouvé' })
+         
+    }
+}) 
+}
 // Trouver tous les utilisateurs (rôle admin) OK
 exports.getAllUsers = (req, res) => {
     User.findAll((err, data) => {
@@ -148,5 +159,5 @@ exports.deleteUser = (req, res) => {
         
     }
 })
-}
+};
 
